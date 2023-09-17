@@ -13,6 +13,14 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->get('/', 'WelcomeController@welcome');
+
+$router->group(['prefix' => 'api/v1'], function ($router) {
+    $router->post('login', 'AuthController@login');
+    $router->post('logout', 'AuthController@logout');
+    $router->post('refresh', 'AuthController@refresh');
+
+    $router->group(['middleware' => 'auth:api'], function ($router) {
+        $router->post('user-profile', 'AuthController@userProfile');
+    });
 });

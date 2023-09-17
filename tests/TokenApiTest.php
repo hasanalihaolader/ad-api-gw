@@ -15,8 +15,22 @@ class TokenApiTest extends TestCase
         $this->post(
             '/api/v1/login',
             [
-                "email" => "rahibhasan689009@gmail.com",
+                "email" => "test@gmail.com",
                 "password" => "12345678"
+            ]
+        );
+        $this->seeStatusCode(200);
+        $this->seeJsonStructure(
+            [
+                'status',
+                'code',
+                'message',
+                'data' =>
+                [
+                    'access_token',
+                    'token_type',
+                    'expires_in',
+                ]
             ]
         );
         $this->seeJson(

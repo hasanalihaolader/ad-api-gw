@@ -11,8 +11,10 @@
  * @return array
  */
 
+use Illuminate\Support\Facades\Log;
+
 if (!function_exists('responseData')) {
-    function responseData($status, $code, $message, $data = "", $details = null)
+    function responseData(bool $status, int $code, string $message, array $data = [], $details = null): array
     {
         $response = [
             'status'  => $status,
@@ -29,5 +31,19 @@ if (!function_exists('responseData')) {
         }
 
         return $response;
+    }
+}
+
+if (!function_exists('infoLog')) {
+    function infoLog(string $method, string $message, array $data): void
+    {
+        Log::info($method . '-' . $message, $data);
+    }
+}
+
+if (!function_exists('errorLog')) {
+    function infoLog(string $method, string $message, array $data): void
+    {
+        Log::error($method . '-' . $message, $data);
     }
 }

@@ -48,3 +48,33 @@ if (!function_exists('errorLog')) {
         Log::error($method . '-' . $message, $data);
     }
 }
+
+/**
+ * Return current Unix timestamp with microseconds as integer
+ *
+ * Note: microtime(true) losses some precision (https://stackoverflow.com/a/25559420)
+ *
+ * @return int
+ */
+function microtime_int()
+{
+    $mt = explode(' ', microtime());
+    return ((int) $mt[1]) * 1000 + ((int) round($mt[0] * 1000));
+}
+
+/**
+ * Return the date with "Y-m-d H:i:s.v" format
+ *
+ * @param int $timestamp
+ */
+if (!function_exists('convertToDateTimeString')) {
+    function convertToDateTimeString($timestamp)
+    {
+        if ($timestamp) {
+            $float_timestamp = number_format($timestamp / 1000, 3, '.', '');
+            return DateTime::createFromFormat('U.v', $float_timestamp)
+                ->setTimezone(new DateTimeZone('Asia/Dhaka'))
+                ->format('Y-m-d H:i:s.v');
+        }
+    }
+}

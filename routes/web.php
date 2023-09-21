@@ -22,5 +22,8 @@ $router->group(['prefix' => 'api/v1'], function ($router) {
 
     $router->group(['middleware' => 'auth:api'], function ($router) {
         $router->post('user-profile', 'AuthController@userProfile');
+        $router->group(['prefix' => 'ip'], function ($router) {
+            $router->post('create', 'IpManagementController@create');
+        });
     });
 });

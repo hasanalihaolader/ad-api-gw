@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AuditTrailEvent;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +39,12 @@ class AuthController extends Controller
                 $this->respondWithToken($token)
             );
             infoLog(__METHOD__, 'Token get successfully', $response);
+            event(new AuditTrailEvent(
+                'Login',
+                'Token',
+                $response,
+                auth()->user()
+            ));
             //TODO: have improvement scope during write log sensitive information not write directly use *********** symbol instead
         } catch (\Exception $e) {
             $response = responseData(
@@ -70,6 +77,12 @@ class AuthController extends Controller
                 'Logged in user profile fetch successfully',
                 auth()->user()
             );
+            event(new AuditTrailEvent(
+                'Get',
+                'UserProfile',
+                $response,
+                auth()->user()
+            ));
         } catch (\Exception $e) {
             $response = responseData(
                 false,
@@ -95,6 +108,7 @@ class AuthController extends Controller
     public function logout(): JsonResponse
     {
         try {
+            $user = auth()->user();
             auth()->logout();
             $response = responseData(
                 true,
@@ -102,6 +116,12 @@ class AuthController extends Controller
                 'Successfully logged out'
             );
             infoLog(__METHOD__, 'Successfully logged out', []);
+            event(new AuditTrailEvent(
+                'Logout',
+                'Token',
+                $response,
+                $user
+            ));
         } catch (\Exception $e) {
             $response = responseData(
                 false,
@@ -127,6 +147,7 @@ class AuthController extends Controller
     public function refresh(): JsonResponse
     {
         try {
+            $user = auth()->user();
             $response = responseData(
                 true,
                 Response::HTTP_OK,
@@ -135,6 +156,13 @@ class AuthController extends Controller
                     auth()->refresh()
                 )
             );
+            infoLog(__METHOD__, 'Refresh Token get successfully', $response);
+            event(new AuditTrailEvent(
+                'Login',
+                'Refresh Token',
+                $response,
+                $user
+            ));
         } catch (\Exception $e) {
             $response = responseData(
                 false,

@@ -24,6 +24,7 @@ $router->group(['prefix' => 'api/v1'], function ($router) {
         $router->post('user-profile', 'AuthController@userProfile');
         $router->group(['prefix' => 'ip'], function ($router) {
             $router->post('create', 'IpManagementController@create');
+            $router->patch('update/{id}', 'IpManagementController@update');
         });
     });
 });

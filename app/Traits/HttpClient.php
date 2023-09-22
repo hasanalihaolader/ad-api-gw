@@ -14,7 +14,7 @@ trait HttpClient
     /**
      * Http Request using Guzzle Http
      *
-     * @param array $base_url MS Base URL
+     * @param string $base_url MS Base URL
      * @param array $request_data Post data
      * @param string $request_endpoint MS hit point
      * @param string $request_type Request type
@@ -24,12 +24,12 @@ trait HttpClient
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public static function httpRequest(
-        $base_url,
-        $request_data,
-        $request_endpoint,
-        $request_type = "POST",
-        $custom_headers = [],
-        $data_type = ''
+        string $base_url,
+        array $request_data,
+        string $request_endpoint,
+        string $request_type = "POST",
+        array $custom_headers = [],
+        string $data_type = ''
     ) {
         $handler = new CurlHandler();
         $stack = HandlerStack::create($handler);
@@ -67,12 +67,12 @@ trait HttpClient
                 &$method_name
             ) {
                 $body = $response->getBody()->getContents();
-                $jsonBody = json_decode($body, true);
+                $json_body = json_decode($body, true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    $jsonBody = $body;
+                    $json_body = $body;
                 }
                 $log['response'] = [
-                    'body' => $jsonBody,
+                    'body' => $json_body,
                     'status' => $response->getStatusCode(),
                 ];
                 $log['start_time'] = convertToDateTimeString($start_time);
@@ -101,17 +101,18 @@ trait HttpClient
         ];
 
         $headers = array_merge($headers, $custom_headers);
-        if ($request_type == "POST" && $data_type == '') {
+        if (($request_type == "POST" || $request_type == "PATCH") && $data_type == '') {
             $response = $client->request($request_type, $request_endpoint, [
                 'headers' => $headers,
                 'form_params' => $request_data,
             ]);
 
-        } elseif ($request_type == "POST" && $data_type == 'json') {
+        } elseif (($request_type == "POST" || $request_type == "PATCH") && $data_type == 'json') {
             $response = $client->request($request_type, $request_endpoint, [
                 'headers' => $headers,
                 'json' => $request_data,
             ]);
+
         } elseif ($request_type == "GET") {
 
             $response = $client->request($request_type, $request_endpoint, [

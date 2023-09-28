@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Events\AuditTrailEvent;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -30,13 +29,17 @@ class AuthController extends Controller
                     false,
                     Response::HTTP_UNAUTHORIZED,
                     'Unauthorized'
-                ));
+                ), Response::HTTP_UNAUTHORIZED);
             }
+
+            $code = Response::HTTP_OK;
+            $respond_with_token = $this->respondWithToken($token);
+            $respond_with_token['user'] = auth()->user();
             $response = responseData(
                 true,
                 Response::HTTP_OK,
                 'Token get successfully',
-                $this->respondWithToken($token)
+                $respond_with_token
             );
             infoLog(__METHOD__, 'Token get successfully', $response);
             event(new AuditTrailEvent(
@@ -47,6 +50,7 @@ class AuthController extends Controller
             ));
             //TODO: have improvement scope during write log sensitive information not write directly use *********** symbol instead
         } catch (\Exception $e) {
+            $code = Response::HTTP_INTERNAL_SERVER_ERROR;
             $response = responseData(
                 false,
                 Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -60,7 +64,7 @@ class AuthController extends Controller
                 $response
             );
         }
-        return response()->json($response);
+        return response()->json($response, $code);
     }
 
     /**
@@ -71,6 +75,7 @@ class AuthController extends Controller
     public function userProfile(): JsonResponse
     {
         try {
+            $code = Response::HTTP_OK;
             $response = responseData(
                 true,
                 Response::HTTP_OK,
@@ -84,6 +89,7 @@ class AuthController extends Controller
                 auth()->user()
             ));
         } catch (\Exception $e) {
+            $code = Response::HTTP_INTERNAL_SERVER_ERROR;
             $response = responseData(
                 false,
                 Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -97,7 +103,7 @@ class AuthController extends Controller
                 $response
             );
         }
-        return response()->json($response);
+        return response()->json($response, $code);
     }
 
     /**
@@ -108,6 +114,7 @@ class AuthController extends Controller
     public function logout(): JsonResponse
     {
         try {
+            $code = Response::HTTP_OK;
             $user = auth()->user();
             auth()->logout();
             $response = responseData(
@@ -123,6 +130,7 @@ class AuthController extends Controller
                 $user
             ));
         } catch (\Exception $e) {
+            $code = Response::HTTP_INTERNAL_SERVER_ERROR;
             $response = responseData(
                 false,
                 Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -136,7 +144,7 @@ class AuthController extends Controller
                 $response
             );
         }
-        return response()->json($response);
+        return response()->json($response, $code);
     }
 
     /**
@@ -147,7 +155,7 @@ class AuthController extends Controller
     public function refresh(): JsonResponse
     {
         try {
-            $user = auth()->user();
+            $code = Response::HTTP_OK;
             $response = responseData(
                 true,
                 Response::HTTP_OK,
@@ -157,27 +165,26 @@ class AuthController extends Controller
                 )
             );
             infoLog(__METHOD__, 'Refresh Token get successfully', $response);
-            event(new AuditTrailEvent(
-                'Login',
-                'Refresh Token',
-                $response,
-                $user
-            ));
         } catch (\Exception $e) {
+            if ($e->getCode() == 0) {
+                $code = Response::HTTP_FORBIDDEN;
+            } else {
+                $code = Response::HTTP_INTERNAL_SERVER_ERROR;
+            }
             $response = responseData(
                 false,
-                Response::HTTP_INTERNAL_SERVER_ERROR,
-                Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR],
+                $code,
+                Response::$statusTexts[$code],
                 [],
                 $e->getMessage()
             );
             errorLog(
                 __METHOD__,
-                Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR],
+                Response::$statusTexts[$code],
                 $response
             );
         }
-        return response()->json($response);
+        return response()->json($response, $code);
     }
 
     /**

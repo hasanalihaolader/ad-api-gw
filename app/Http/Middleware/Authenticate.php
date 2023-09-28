@@ -42,7 +42,8 @@ class Authenticate
                     false,
                     Response::HTTP_UNAUTHORIZED,
                     'Unauthorized',
-                )
+                ),
+                Response::HTTP_UNAUTHORIZED
             );
         }
 

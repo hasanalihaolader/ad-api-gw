@@ -22,11 +22,22 @@ $router->group(['prefix' => 'api/v1'], function ($router) {
 
     $router->group(['middleware' => 'auth:api'], function ($router) {
         $router->post('user-profile', 'AuthController@userProfile');
-        $router->group(['prefix' => 'ip'], function ($router) {
-            $router->get('/', 'IpManagementController@get');
-            $router->post('create', 'IpManagementController@create');
-            $router->patch('update/{id}', 'IpManagementController@update');
-            $router->get('/{id}', 'IpManagementController@getById');
-        });
+        $router->get('{any:.*}', 'ApiController@handle');
+        $router->post('{any:.*}', 'ApiController@handle');
+        $router->put('{any:.*}', 'ApiController@handle');
+        $router->patch('{any:.*}', 'ApiController@handle');
+        $router->delete('{any:.*}', 'ApiController@handle');
+        $router->options('{any:.*}', 'ApiController@handle');
+        // $router->addRoute(['GET','POST', 'PUT', 'PATCH', 'DELETE','OPTIONS'], '{any}', 'Controller@handle')->where('any', '*');
+        // $router::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], '{any}', 'Controller@handle')
+        // ->where('any', '.*');
+        // $router->group(['prefix' => 'ip'], function ($router) {
+            // $router->post('{any}', 'IpManagementController@create');
+
+            // $router->get('/', 'IpManagementController@get');
+            // $router->post('create', 'IpManagementController@create');
+            // $router->patch('update/{id}', 'IpManagementController@update');
+            // $router->get('/{id}', 'IpManagementController@getById');
+        // });
     });
 });

@@ -28,16 +28,5 @@ $router->group(['prefix' => 'api/v1'], function ($router) {
         $router->patch('{any:.*}', 'ApiController@handle');
         $router->delete('{any:.*}', 'ApiController@handle');
         $router->options('{any:.*}', 'ApiController@handle');
-        // $router->addRoute(['GET','POST', 'PUT', 'PATCH', 'DELETE','OPTIONS'], '{any}', 'Controller@handle')->where('any', '*');
-        // $router::match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], '{any}', 'Controller@handle')
-        // ->where('any', '.*');
-        // $router->group(['prefix' => 'ip'], function ($router) {
-            // $router->post('{any}', 'IpManagementController@create');
-
-            // $router->get('/', 'IpManagementController@get');
-            // $router->post('create', 'IpManagementController@create');
-            // $router->patch('update/{id}', 'IpManagementController@update');
-            // $router->get('/{id}', 'IpManagementController@getById');
-        // });
     });
 });

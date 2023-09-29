@@ -55,8 +55,8 @@ RUN composerInstallArgs="--ignore-platform-reqs --no-interaction --no-scripts --
 
 COPY --chown=www-data:www-data ./src .
 
-RUN chown -R www-data:www-data /var/www storage\
-    && chmod -R g+sw storage\
+RUN chown -R www-data:www-data /var/www storage \
+    && chmod -R 755 storage\
     && composerDumpAutoloadArgs="-o" \
     && export composerDumpAutoloadArgs \
     && if [ "${BUILD_MODE}" = "prod" ]; then \

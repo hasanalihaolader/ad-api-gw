@@ -60,6 +60,8 @@ $app->singleton(
 */
 
 $app->configure('app');
+$app->configure('auth');
+$app->configure('endpoint_mapping_ip_ms');
 
 /*
 |--------------------------------------------------------------------------

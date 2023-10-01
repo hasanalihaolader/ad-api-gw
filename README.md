@@ -62,7 +62,7 @@ apigw
 
 ### **🌱 Application info:**
 ```env
-App_URL: https://localhost:4002/
+App_URL: http://localhost:4002/
 ```
 
 ### **🌱 Default user name password to get token**

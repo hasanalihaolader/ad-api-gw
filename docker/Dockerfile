@@ -77,7 +77,9 @@ COPY ./docker/app/nginx/ /etc/nginx/
 RUN envsubst "`env | awk -F = '{printf \" $$%s\", $$1}'`\"" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf \
     && rm -f /etc/nginx/conf.d/*.template
 
-RUN php artisan cache:clear
+COPY /docker/app/entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
 
 # Start PHP-FPM & nginx service
 CMD service php7.4-fpm start && nginx -g "daemon off;"
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
